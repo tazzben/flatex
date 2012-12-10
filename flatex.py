@@ -40,23 +40,38 @@ def expand_file(base_file):
 returns it with all the inputs replaced with the contents of the 
 referenced file.  
     """
-    output_lines = [] 
+	
+	output_lines = []
+	extensions = ['.tex','.TEX', '.Tex']
+	if os.path.isfile(os.path.expanduser(base_file.strip())):
+		base_file = os.path.expanduser(base_file.strip())
+	elif:
+		for item in extensions:
+			if os.path.isfile(os.path.expanduser(base_file.strip() + item)):
+				base_file = os.path.expanduser(base_file.strip() + item)
+				break
+	
+	if os.path.isfile(base_file):
+		print "Combined " + os.path.expanduser(base_file.strip()) + " into main file"
+	else:
+		return output_lines
+    
     f = open(base_file, "r")
     for line in f:
         if is_input(line):
-            current_path = os.path.split(base_file)[0] 
+            current_path = os.path.dirname(os.path.abspath(base_file))
             new_base_file = combine_path(current_path, get_input(line))
-            output_lines += expand_file(new_base_file)
+            output_lines.extend(expand_file(new_base_file))
         else:
             output_lines.append(line)
     f.close() 
     return output_lines 
 
-def main(base_file, output_file): 
-    g = open(output_file, "w")
-    g.write(''.join(expand_file(base_file)))
-    g.close() 
-    return None 
+def main(base_file, output_file):
+    g = open(os.path.expanduser(output_file), "w")
+    g.writelines(expand_file(base_file))
+    g.close()
+    return None
 
 if __name__ == '__main__': 
     base_file, output_file = sys.argv[1:]
